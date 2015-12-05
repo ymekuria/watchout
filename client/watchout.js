@@ -1,4 +1,4 @@
-// start slingin' some d3 here.
+ // start slingin' some d3 here.
 var width = 800;
 var height = 500;
 var enemies = 5;
@@ -38,14 +38,44 @@ var makeEnemyArray = function(){
   }
   return array
 }
+var scoreReset = function(){
+  var score = parseInt(d3.select('.current').selectAll('span').text())
+  var highScore = parseInt(d3.select('.highscore').selectAll('span').text())
+  if(score > highScore){
+    d3.select('.highscore').selectAll('span').text(score)
+  } 
+  d3.select('.current').selectAll('span').text('0')
+  if(d3.select('.current').selectAll('span').text() === '1'){
+    var oldCollisions = parseInt(d3.select('.collisions').selectAll('span').text())
+    var newCollisions = oldCollisions + 1
+    d3.select('.current').selectAll('span').text(newCollisions)
+  }
+}
+
+
+var collisionCheck = function(){
+  return function(){    
+    var enemyxaxis = this.getAttribute('cx');
+    var enemyyaxis = this.getAttribute('cy');
+    var playerxaxis = player.attr('cx');
+    var playeryaxis = player.attr('cy');
+    var sumRadii = 35;
+    if(Math.abs(enemyxaxis - playerxaxis) < sumRadii &&
+       Math.abs(enemyyaxis - playeryaxis) < sumRadii){
+      scoreReset();
+    }
+  }
+};
 
 var enemyMove = function(array){
   var selection = d3.select('svg').selectAll('.enemy')
     .data(array, function(d) {return d.id})
       
   selection.transition().duration(1000)
+    .tween('custom', collisionCheck)
+
     .attr('cx', function(d){return d.cx})
-    .attr('cy', function(d){return d.cy});   
+    .attr('cy', function(d){return d.cy})
 
   selection.enter().append('circle')
     .attr('cx', function(d){return d.cx})
@@ -53,12 +83,16 @@ var enemyMove = function(array){
     .attr('r', 10)
     .attr('fill', 'red')
     .classed('enemy', true)
-
-
-
 }
+
+var incrementScore = function(){
+  var oldScore = parseInt(d3.select('.current').selectAll('span').text())
+  var newScore = oldScore + 1;
+  d3.select('.current').selectAll('span').text(newScore)
+}
+
 enemyMove(makeEnemyArray());
 setInterval(function(){enemyMove(makeEnemyArray())}, 1000);
-
+setInterval(incrementScore, 500);
 
 

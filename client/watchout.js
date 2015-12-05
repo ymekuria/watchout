@@ -1,7 +1,7 @@
 // start slingin' some d3 here.
 var width = 800;
 var height = 500;
-var enemies = 5
+var enemies = 50;
 var board = d3.select('body').append('svg')
   .attr('width', width)
   .attr('height', height)
@@ -34,20 +34,25 @@ var makeEnemyArray = function(){
 
 var enemyMove = function(array){
   var selection = d3.select('svg').selectAll('.enemy')
+    .data(array, function(d) {return d.id})
     
-    .data(array, function(d) {return d.id}).append('circle')
+    
+  selection.transition().duration(1500)
     .attr('cx', function(d){return d.cx})
-    .attr('cy', function(d){return d.cy})
-    
+    .attr('cy', function(d){return d.cy});   
+
   selection.enter().append('circle')
     .attr('cx', function(d){return d.cx})
     .attr('cy', function(d){return d.cy})
     .attr('r', 10)
     .attr('fill', 'red')
     .classed('enemy', true)
-}
 
+
+
+}
 enemyMove(makeEnemyArray());
+setInterval(function(){enemyMove(makeEnemyArray())}, 2000);
 
 
 

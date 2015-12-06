@@ -7,14 +7,9 @@ var board = d3.select('body').append('svg')
   .attr('height', height)
   .classed('board', true);
 
-var background = board.append('image')
-  .attr('xlink:href', 'lib/background.jpg')
-  .attr('height', height)
-  .attr('width', width)
-
 var drag = d3.behavior.drag()  
- .on('drag', function() { player.attr('x', d3.event.x)
-                                .attr('y', d3.event.y); })
+ .on('drag', function() { player.attr('cx', d3.event.x)
+                                .attr('cy', d3.event.y); })
  
 // var player = board.append('circle')
 //   .attr('cx', width/2)
@@ -25,7 +20,7 @@ var drag = d3.behavior.drag()
 //   .classed('player', true); 
 
 var player = board.append('image')
-  .attr('xlink:href', 'lib/ninja.png')
+  .attr('xlink:href', 'lib/shuriken.png')
   .attr('x', width/2)
   .attr('y', height/2)
   .attr('height', '75px')
@@ -36,18 +31,18 @@ var player = board.append('image')
   
 var makeEnemyArray = function(){
   var array = []
-  var makeEnemy = function(i, x, y){
+  var makeEnemy = function(i, cx, cy){
     var enemyObj = {}
     enemyObj.id = i;
-    enemyObj.x = x;
-    enemyObj.y = y;
+    enemyObj.cx = cx;
+    enemyObj.cy = cy;
     return enemyObj;
   }
 
   for(var i = 0; i < enemies; i++){
-    var x = Math.random() * width;
-    var y = Math.random() * height;
-    array[i] = makeEnemy(i, x, y);
+    var cx = Math.random() * width;
+    var cy = Math.random() * height;
+    array[i] = makeEnemy(i, cx, cy);
   }
   return array
 }
@@ -63,10 +58,10 @@ var scoreReset = function(){
 
 var collisionCheck = function(){
   return function(){    
-    var enemyxaxis = this.getAttribute('x');
-    var enemyyaxis = this.getAttribute('y');
-    var playerxaxis = player.attr('x');
-    var playeryaxis = player.attr('y');
+    var enemyxaxis = this.getAttribute('cx');
+    var enemyyaxis = this.getAttribute('cy');
+    var playerxaxis = player.attr('cx');
+    var playeryaxis = player.attr('cy');
     var sumRadii = 35;
     if(Math.abs(enemyxaxis - playerxaxis) < sumRadii &&
        Math.abs(enemyyaxis - playeryaxis) < sumRadii){
@@ -82,15 +77,14 @@ var enemyMove = function(array){
   selection.transition().duration(1000)
     .tween('custom', collisionCheck)
 
-    .attr('x', function(d){return d.x})
-    .attr('y', function(d){return d.y})
+    .attr('cx', function(d){return d.cx})
+    .attr('cy', function(d){return d.cy})
 
-  selection.enter().append('image')
-    .attr('xlink:href', 'lib/shuriken.png')
-    .attr('x', function(d){return d.x})
-    .attr('y', function(d){return d.y})
-    .attr('width', 40)
-    .attr('height', 40)
+  selection.enter().append('circle')
+    .attr('cx', function(d){return d.cx})
+    .attr('cy', function(d){return d.cy})
+    .attr('r', 10)
+    .attr('fill', 'red')
     .classed('enemy', true)
 }
 
@@ -111,5 +105,4 @@ enemyMove(makeEnemyArray());
 setInterval(function(){enemyMove(makeEnemyArray())}, 1000);
 setInterval(incrementScore, 50);
 setInterval(incrementCollisions, 100);
-
 

@@ -7,9 +7,17 @@ Feel free to use it if you like. */
 }
 
 .player {
+  /*-webkit-transform: rotate(180deg);*/
 
 }
 
 .enemy {
-  background-image: url('lib/shuriken.png');
+    animation: spin 1000ms infinite linear;
+    transform-origin: 50% 50% 0;
 }
+
+@keyframes spin{
+  from{ transfrom: rotate(0deg);}
+  to{ transform: rotate(360deg);}
+};
+
